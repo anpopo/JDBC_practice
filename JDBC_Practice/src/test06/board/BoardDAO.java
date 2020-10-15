@@ -280,10 +280,40 @@ public class BoardDAO implements InterBoardDAO {
 		
 		return result;
 	}
+
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// 글 수정하기
+	@Override
+	public int updateBoard(Map<String, String> paraMap) {
+		
+		int result = 0;
+		
+		try {
+			conn = MyDBConnection.getConn();
+			
+			String sql = "update jdbc_board set subject = ?, contents = ?\n"+
+					"    where boardno = ?";
+			
+			ps = conn.prepareStatement(sql);
+			
+			ps.setString(1, paraMap.get("subject"));
+			ps.setString(2, paraMap.get("contents"));
+			ps.setString(3, paraMap.get("boardNo"));
+			
+			result = ps.executeUpdate();
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return result;
+	}
 	
-	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	
 	

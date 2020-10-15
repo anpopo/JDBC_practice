@@ -103,7 +103,6 @@ public class TotalController {
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
-	
 	// 로그인 하기
 	private MemberDTO login(Scanner sc) {
 		
@@ -195,7 +194,21 @@ public class TotalController {
 				}
 				break;
 			case "6":  // 글삭제하기
+				n = deleteBoard(member, sc);
 				
+				if (n == 0) {
+					System.out.println(">>> 삭제할 글번호가 글 목록에 존재하지 않습니다. <<<\n");
+				} else if (n == 1) {
+					System.out.println(">>> 다른 사용자의 글은 삭제가 불가 합니다!! <<<\n");
+				} else if (n == 2) {
+					System.out.println(">>> 글암호가 올바르지 않습니다 <<<\n");
+				} else if (n == 3) {
+					System.out.println(">>> 글 삭제 실패!!! <<<\n");
+				} else if (n == 4) {
+					System.out.println(">>> 글  삭제 취소 !!!! <<<\n");
+				} else if (n == 5) {
+					System.out.println(">>> 글 삭제 성공!!!!!!!! <<<\n");
+				}
 				break;
 			case "7":  // 최근1주일간 일자별 게시글 작성건수
 				
@@ -394,7 +407,7 @@ public class TotalController {
 	}
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	
+	// 글 수정하기 
 	private int updateBoard(MemberDTO member, Scanner sc) {
 		
 		int result = 0;
@@ -440,15 +453,41 @@ public class TotalController {
 					
 					int n = bdao.updateBoard(paraMap);
 					
+					String yn = "";
 					
-				} else {
+					if (n == 1) {
+						Connection conn = MyDBConnection.getConn();
+						
+						do {
+							System.out.print(">> 정말로 수정하시겠습니까?[Y/N] > ");
+							yn = sc.nextLine();
+							try {
+								if("y".equalsIgnoreCase(yn)) {  // 사용자가 확인버튼을 누르고 확인한 경우
+									result = 5;
+									conn.commit();
+									break;
+								} else if("n".equalsIgnoreCase(yn)) {  // 사용자가 직접 입력을 취소한 경우
+									result = 4;
+									conn.rollback();
+									break;
+								} else {
+									System.out.println("입력이 옳지 않삼! 다시입력해주삼!\n");
+								}
+							} catch (SQLException e) {
+								break;
+							}
+							
+						} while (true);
+					} else {  // 데이터베이스 내부적으로 문제가 생겨 글을 업데이트 한 결과값이 1이 나오지 않았을 경우
+						result = 3;
+					}
+				} else {  // 글 암호가 올바르지 않을 경우 글을 조회할 수 없다.
 					result = 2;
 				}
-			} else {
+			} else {  // 로그인한 사용자가 아닌 다른 사용자가 쓴 글을 수정하려고 하는경우 
 				result = 1;
 			}
 		}
-		
 		return result;
 	}
 	

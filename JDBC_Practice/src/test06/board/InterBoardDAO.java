@@ -17,6 +17,8 @@ public interface InterBoardDAO {
 
 	int writeComment(BoardCommentDTO cmdto);  // 4. 댓글쓰기
 
+	int updateBoard(Map<String, String> paraMap);  // 5.글 수정하기
+
 	
 
 }
