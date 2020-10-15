@@ -312,13 +312,86 @@ public class BoardDAO implements InterBoardDAO {
 		
 		return result;
 	}
+
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// 글 삭제하기
+	@Override
+	public int deleteBoard(Map<String, String> paraMap) {
+		int result = 0;
+		
+		try {
+			conn = MyDBConnection.getConn();
+			
+			String sql = "delete from jdbc_board\n"+
+					"    where boardno = ? and boardpasswd = ?";
+		
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, paraMap.get("boardNo"));
+			ps.setString(2, paraMap.get("boardPasswd"));
+			
+			result = ps.executeUpdate();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return result;
+	}
+
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public Map<String, Integer> weekCount() {
+		
+		Map<String, Integer> resultMap = new HashMap<String, Integer>();		
+		
+		
+		try {
+			conn = MyDBConnection.getConn();
+			
+			String sql = "select count(*) as total\n"+
+					"    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 6, 1, 0)) as prev6\n"+
+					"    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 5, 1, 0)) as prev6\n"+
+					"    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 4, 1, 0)) as prev6\n"+
+					"    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 3, 1, 0)) as prev6\n"+
+					"    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 2, 1, 0)) as prev6\n"+
+					"    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 1, 1, 0)) as prev6\n"+
+					"    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 0, 1, 0)) as prev6\n"+
+					"    from jdbc_board\n"+
+					"    where (func_midnight(sysdate) - func_midnight(writeday)) < 7";
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			if(rs.next()) {
+				resultMap.put("total", rs.getInt(1));
+				resultMap.put("prev6", rs.getInt(2));
+				resultMap.put("prev5", rs.getInt(3));
+				resultMap.put("prev4", rs.getInt(4));
+				resultMap.put("prev3", rs.getInt(5));
+				resultMap.put("prev2", rs.getInt(6));
+				resultMap.put("prev1", rs.getInt(7));
+				resultMap.put("today", rs.getInt(8));
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		
+		return resultMap;
+	}
 	
-	
-	
-	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	
 	

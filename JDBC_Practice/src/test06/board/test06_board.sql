@@ -165,3 +165,41 @@
     
     insert into jdbc_comment(commentno, fk_boardno, fk_userid, contents)
     values(seq_comment.nextval, ?, ?, ?);
+    
+    delete from jdbc_board;
+    where boardno = ? and boardpasswd = ?;
+    
+    
+    /*
+        [문법]
+        create or replace function 함수명
+        (파라미터변수명 in 파라미터변수명의 타입)
+        return 리턴시킬타입
+        is 
+            변수선언;
+        begin
+            명령어;
+            return 값;
+        end 함수명;
+    */
+    
+    -- 특정날짜를 입력받아서 그 날짜의 자정의 값을 반환시켜주는 함수를 생성해보자
+    create or replace function func_midnight
+    (p_date in date)
+    return date
+    is
+    begin
+        return to_date(to_char(p_date, 'yyyy-mm-dd'), 'yyyy-mm-dd');
+    end func_midnight;
+    
+    
+    select count(*) as total
+    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 6, 1, 0)) as prev6
+    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 5, 1, 0)) as prev6
+    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 4, 1, 0)) as prev6
+    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 3, 1, 0)) as prev6
+    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 2, 1, 0)) as prev6
+    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 1, 1, 0)) as prev6
+    , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 0, 1, 0)) as prev6
+    from jdbc_board
+    where (func_midnught(sysdate) - func_midnight(writeday)) < 7;

@@ -3,6 +3,7 @@ package test06.board;
 import java.sql.*;
 import java.util.*;
 
+import my.util.MyUtil;
 import test05.singleton.dbconnection.MyDBConnection;
 
 public class TotalController {
@@ -211,7 +212,7 @@ public class TotalController {
 				}
 				break;
 			case "7":  // 최근1주일간 일자별 게시글 작성건수
-				
+				weekCount();
 				break;
 			case "8":  // 이번달 일자별 게시글 작성건수
 				
@@ -516,6 +517,37 @@ public class TotalController {
 					
 					int n = bdao.deleteBoard(paraMap);
 					
+					String yn = "";
+					
+					if(n == 1) {
+						Connection conn = MyDBConnection.getConn();
+						
+						do {
+							System.out.print("\n>> 정말로 삭제하시겠습니까?[Y/N] > ");
+							yn = sc.nextLine();
+							
+							try {
+								if ("y".equalsIgnoreCase(yn)) { // 사용자가 확인을 한 경우
+									result = 5;
+									conn.commit();
+									break;
+								} else if ("n".equalsIgnoreCase(yn)) { // 사용자가 직접 입력을 취소한 경우
+									result = 4;
+									conn.rollback();
+									break;
+								} else { // 입력이 옳지 않을 경우 (y/n 이외의 입력)
+									System.out.println("입력이 옳지 않습니다~!!@!@!@ 다시입력해주세용~\n");
+								}
+							} catch (SQLException e) {
+								e.printStackTrace();
+								break;
+							}
+						} while (true);
+						
+					} else {
+						result = 3;
+					}
+					
 				} else {
 					result = 2;
 				}
@@ -526,6 +558,39 @@ public class TotalController {
 		return result;
 	}
 	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	// 최근 1주일간 게시글 작성건수
+	private void weekCount() {
+		String col = "전체\t";
+		for (int i = 0; i < 7; i++) {
+			col += MyUtil.getDay(i - 6) + "\t";
+		}
+		
+		System.out.println(
+				"-------------------------------------------[최근 1주일간 일자별 게시글 작성 건수]-----------------------------------------------");
+		System.out.println(col);
+		System.out.println(
+				"---------------------------------------------------------------------------------------------------------------------");
+		
+		
+		// Map dms DTO와 마찬가지로 DB에서 가져오는 값의 1개의 행으로 많이 사용되어진다.
+		Map<String, Integer> resultMap = bdao.weekCount();
+		
+		String temp = resultMap.get("total") + "회\t\t"
+				+ resultMap.get("prev6") + "회\t\t" 
+				+ resultMap.get("prev5") + "회\t\t" 
+				+ resultMap.get("prev4") + "회\t\t" 
+				+ resultMap.get("prev3") + "회\t\t" 
+				+ resultMap.get("prev2") + "회\t\t"
+				+ resultMap.get("prev1") + "회\t\t" 
+				+ resultMap.get("today")+ "회";
+		
+		System.out.println(temp);
+	}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
 	
 	

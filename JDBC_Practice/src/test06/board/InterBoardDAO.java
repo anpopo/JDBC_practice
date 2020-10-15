@@ -19,6 +19,10 @@ public interface InterBoardDAO {
 
 	int updateBoard(Map<String, String> paraMap);  // 5.글 수정하기
 
+	int deleteBoard(Map<String, String> paraMap);  // 6.글 삭제하기
+
+	Map<String, Integer> weekCount();  // 최근 1주일간 게시글 작성건수
+
 	
 
 }
