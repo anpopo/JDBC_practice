@@ -235,8 +235,6 @@ public class TotalController {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
-
-
 	// 3. 글쓰기
 	private int write(MemberDTO member, Scanner sc) {
 		
@@ -457,7 +455,6 @@ public class TotalController {
 					
 					if (n == 1) {
 						Connection conn = MyDBConnection.getConn();
-						
 						do {
 							System.out.print(">> 정말로 수정하시겠습니까?[Y/N] > ");
 							yn = sc.nextLine();
@@ -476,7 +473,6 @@ public class TotalController {
 							} catch (SQLException e) {
 								break;
 							}
-							
 						} while (true);
 					} else {  // 데이터베이스 내부적으로 문제가 생겨 글을 업데이트 한 결과값이 1이 나오지 않았을 경우
 						result = 3;
@@ -492,8 +488,43 @@ public class TotalController {
 	}
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	
-	
+	// 글 삭제하기
+	private int deleteBoard(MemberDTO member, Scanner sc) {
+		int result = 0;
+		System.out.println("\n>>> 글 삭제 하기 <<<");
+		System.out.print(">> 삭제할 글번호 : ");
+		String boardNo = sc.nextLine();
+		
+		Map<String, String> paraMap = new HashMap<String,String>();
+		paraMap.put("boardNo", boardNo);
+		
+		BoardDTO bdto = bdao.viewContents(paraMap);
+		
+		if(bdto != null) {  // 수정할 글 번호가 글 목록에 존재하는 경우라면
+			if (bdto.getFk_userid().equals(member.getUserid())) {  // 현재 로그인한 사용자가 글을 쓴 사람의 아이디와 동일하다면
+				System.out.print(">> 글암호 : ");
+				String boardPasswd = sc.nextLine();
+				
+				paraMap.put("boardPasswd", boardPasswd);
+				bdto = bdao.viewContents(paraMap);  // 글 암호가 맞는지 아닌지 확인 해 준다.
+				
+				if(bdto != null) {  // 글 암호가 올바른 경우 뺌
+					System.out.println("-------------------------------------------------------");
+					System.out.println("글제목 : " + bdto.getSubject());
+					System.out.println("글내용 : " + bdto.getContents());
+					System.out.println("-------------------------------------------------------");
+					
+					int n = bdao.deleteBoard(paraMap);
+					
+				} else {
+					result = 2;
+				}
+			} else {
+				result = 1;
+			}
+		}
+		return result;
+	}
 	
 	
 	
