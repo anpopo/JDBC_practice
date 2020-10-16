@@ -1,6 +1,7 @@
 package test06.board;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import my.util.MyUtil;
@@ -215,13 +216,17 @@ public class TotalController {
 				weekCount();
 				break;
 			case "8":  // 이번달 일자별 게시글 작성건수
-				
+				countByDaily();
 				break;
 			case "9":  // 나가기
 				
 				break;
 			case "10":  // 모든회원 정보조회
-				
+				if("admin".equals(member.getUserid())) {
+					
+				} else {
+					System.out.println("존재하지 않는 메뉴번호삼! 다시선택해주삼!!!!\n");
+				}
 				break;
 
 			default:
@@ -231,7 +236,6 @@ public class TotalController {
 			
 		} while (!("9".equals(menuNo)));
 	}
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -559,6 +563,7 @@ public class TotalController {
 	}
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	
 	// 최근 1주일간 게시글 작성건수
 	private void weekCount() {
 		String col = "전체\t";
@@ -573,7 +578,8 @@ public class TotalController {
 				"---------------------------------------------------------------------------------------------------------------------");
 		
 		
-		// Map dms DTO와 마찬가지로 DB에서 가져오는 값의 1개의 행으로 많이 사용되어진다.
+		// Map 은 DTO와 마찬가지로 DB에서 가져오는 값의 1개의 행으로 많이 사용되어진다.
+		
 		Map<String, Integer> resultMap = bdao.weekCount();
 		
 		String temp = resultMap.get("total") + "회\t\t"
@@ -589,6 +595,23 @@ public class TotalController {
 	}
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	
+	private void countByDaily() {
+		Calendar currentDate = Calendar.getInstance();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월");
+		
+		String ym = dateFormat.format(currentDate.getTime());
+		
+		System.out.println(">>> [" + ym + " 일자별 게시글 작성건수] <<<");
+		System.out.println("-----------------------------------------------------------------");
+		System.out.println("작성일자\t\t\t작성건수");
+		System.out.println("-----------------------------------------------------------------");
+		
+		List<Map<String, String>> resultList = bdao.countByDaily();
+		
+		
+	}
+	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	

@@ -202,4 +202,8 @@
     , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 1, 1, 0)) as prev6
     , sum(decode(func_midnight(sysdate) - func_midnight(writeday), 0, 1, 0)) as prev6
     from jdbc_board
-    where (func_midnught(sysdate) - func_midnight(writeday)) < 7;
+    where (func_midnight(sysdate) - func_midnight(writeday)) < 7;
+    
+    
+    from jdbc_board
+    

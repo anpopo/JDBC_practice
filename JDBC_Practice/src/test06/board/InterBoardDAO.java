@@ -21,7 +21,9 @@ public interface InterBoardDAO {
 
 	int deleteBoard(Map<String, String> paraMap);  // 6.글 삭제하기
 
-	Map<String, Integer> weekCount();  // 최근 1주일간 게시글 작성건수
+	Map<String, Integer> weekCount();  // 7.최근 1주일간 게시글 작성건수
+
+	List<Map<String, String>> countByDaily();  // 8.이번달 일자별 게시글 작성 건수
 
 	
 
