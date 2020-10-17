@@ -223,7 +223,7 @@ public class TotalController {
 				break;
 			case "10":  // 모든회원 정보조회
 				if("admin".equals(member.getUserid())) {
-					
+					showMember();
 				} else {
 					System.out.println("존재하지 않는 메뉴번호삼! 다시선택해주삼!!!!\n");
 				}
@@ -240,6 +240,7 @@ public class TotalController {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
+
 	// 3. 글쓰기
 	private int write(MemberDTO member, Scanner sc) {
 		
@@ -609,10 +610,32 @@ public class TotalController {
 		
 		List<Map<String, String>> resultList = bdao.countByDaily();
 		
+		StringBuilder sb = new StringBuilder();
+		
+		if(resultList.size() > 0) {
+			for (Map<String, String> map : resultList) {  // writeday로 불러올 수 있는 이유는 각각의 map객체가 존재하기 때문!
+				sb.append(map.get("writeday") + "\t\t" + map.get("writecount") + "\n");
+			}
+			System.out.println(sb.toString());
+			
+		} else {
+			System.out.println(">>> d이번달에 작성된 게시물이 없삼!\n");
+		}
+		
 		
 	}
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	// 10.모든회원정보 조회
+	private void showMember() {
+		List<MemberDTO> memberList = bdao.showMember();
+		
+		if(memberList != null) {
+			
+		} else {
+			System.out.println("등록된 회원이 없삼...ㅠㅠ\n");
+		}
+	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
 	

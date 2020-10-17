@@ -10,6 +10,9 @@ public class MemberDTO {
 	private String registerday;
 	private int status;
 	
+	private int writecount;
+	private int commentcount;
+	
 	public int getUserseq() {
 		return userseq;
 	}
@@ -57,6 +60,18 @@ public class MemberDTO {
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	public int getWritecount() {
+		return writecount;
+	}
+	public void setWritecount(int writecount) {
+		this.writecount = writecount;
+	}
+	public int getCommentcount() {
+		return commentcount;
+	}
+	public void setCommentcount(int commentcount) {
+		this.commentcount = commentcount;
 	}
 	
 	

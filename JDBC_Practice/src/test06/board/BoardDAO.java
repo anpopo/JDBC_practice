@@ -344,7 +344,7 @@ public class BoardDAO implements InterBoardDAO {
 
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+	// 최근 1주일간 게시글 작성건수
 	@Override
 	public Map<String, Integer> weekCount() {
 		
@@ -365,7 +365,9 @@ public class BoardDAO implements InterBoardDAO {
 					"    from jdbc_board\n"+
 					"    where (func_midnight(sysdate) - func_midnight(writeday)) < 7";
 			ps = conn.prepareStatement(sql);
+			
 			rs = ps.executeQuery();
+			
 			if(rs.next()) {
 				resultMap.put("total", rs.getInt(1));
 				resultMap.put("prev6", rs.getInt(2));
@@ -388,19 +390,109 @@ public class BoardDAO implements InterBoardDAO {
 
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+	// 이번달 일자별 게시글 작성건수
 	@Override
 	public List<Map<String, String>> countByDaily() {
 		
 		List<Map<String, String>> resultList = new ArrayList<Map<String, String>>();
 		
-		conn = MyDBConnection.getConn();
 		
-		return null;
+		try {
+			conn = MyDBConnection.getConn();
+			
+			String sql = "select case grouping(to_char(writeday, 'yyyy-mm-dd')) when 0 then to_char(writeday, 'yyyy-mm-dd') else '전체' end as writeday\n"+
+					"    , count(*) as writecount\n"+
+					"    from jdbc_board\n"+
+					"    where to_char(writeday, 'yyyy-mm') = to_char(sysdate, 'yyyy-mm')\n"+
+					"    group by rollup(to_char(writeday, 'yyyy-mm-dd'))";
+			ps = conn.prepareStatement(sql);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Map<String, String> resultMap = new HashMap<String, String>();
+				
+				resultMap.put("writeday", rs.getString(1));
+				resultMap.put("writecount", rs.getString(2));
+				
+				resultList.add(resultMap);
+				
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return resultList;
 	}
+
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public List<MemberDTO> showMember() {
+		List<MemberDTO> memberList = null;
+		
+		try {
+			conn = MyDBConnection.getConn();
+			
+			String sql = "select userseq\n"+
+					"    , m.userid\n"+
+					"    , name\n"+
+					"    , mobile\n"+
+					"    , point\n"+
+					"    , registerday\n"+
+					"    , status\n"+
+					"    , nvl(b.writecount, 0) as writecount\n"+
+					"    , nvl(c.commentcount, 0) as commentcount\n"+
+					"    from jdbc_member m left join \n"+
+					"    (select fk_userid as userid\n"+
+					"    , count(*) as writecount\n"+
+					"    from jdbc_board\n"+
+					"    group by fk_userid\n"+
+					"    ) b\n"+
+					"    on m.userid = b.userid\n"+
+					"    left join \n"+
+					"    (select fk_userid as userid\n"+
+					"    , count(*) as commentcount\n"+
+					"    from jdbc_comment\n"+
+					"    group by fk_userid\n"+
+					"    ) c\n"+
+					"    on m.userid = c.userid";
+			
+			ps = conn.prepareStatement(sql);
+			
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				memberList = new ArrayList<MemberDTO>();
+				
+				MemberDTO member = new MemberDTO();
+				member.setUserseq(rs.getInt(1));
+				member.setUserid(rs.getString(2));
+				member.setName(rs.getString(3));
+				member.setMobile(rs.getString(4));
+				member.setPoint(rs.getInt(5));
+				member.setRegisterday(rs.getString(6));
+				member.setStatus(rs.getInt(7));
+				member.setWritecount(rs.getInt(8));
+				member.setCommentcount(rs.getInt(9));
+				
+				memberList.add(member);
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			
+		}
+		
+		return memberList;
+	}
+	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	

@@ -205,5 +205,39 @@
     where (func_midnight(sysdate) - func_midnight(writeday)) < 7;
     
     
-    from jdbc_board
+    select case grouping(to_char(writeday, 'yyyy-mm-dd')) when 0 then to_char(writeday, 'yyyy-mm-dd') else '전체' end as writeday
+    , count(*) as writecount
+    from jdbc_board;
+    where to_char(writeday, 'yyyy-mm') = to_char(sysdate, 'yyyy-mm')
+    group by rollup(to_char(writeday, 'yyyy-mm-dd'));
     
+    
+    select userseq
+    , m.userid
+    , name
+    , mobile
+    , point
+    , registerday
+    , case status when 1 then '회원' else '탈퇴' end as status
+    , b.writecount
+    , c.commentcount
+    from jdbc_member m join 
+    (select fk_userid as userid
+    , count(*) as writecount
+    from jdbc_board
+    group by fk_userid
+    ) b
+    on m.userid = b.userid
+    join 
+    (select fk_userid as userid
+    , count(*) as commentcount
+    from jdbc_comment
+    group by fk_userid
+    ) c
+    on m.userid = c.userid;
+    
+    select *
+    from jdbc_board;
+    
+    select *
+    from jdbc_comment;

@@ -25,6 +25,8 @@ public interface InterBoardDAO {
 
 	List<Map<String, String>> countByDaily();  // 8.이번달 일자별 게시글 작성 건수
 
+	List<MemberDTO> showMember();  // 10.전체 회원 정보 보기
+
 	
 
 }
