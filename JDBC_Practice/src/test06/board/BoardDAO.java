@@ -431,10 +431,10 @@ public class BoardDAO implements InterBoardDAO {
 
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+	// 전체 유저 정보 조회
 	@Override
 	public List<MemberDTO> showMember() {
-		List<MemberDTO> memberList = null;
+		List<MemberDTO> memberList = new ArrayList<MemberDTO>();
 		
 		try {
 			conn = MyDBConnection.getConn();
@@ -461,15 +461,14 @@ public class BoardDAO implements InterBoardDAO {
 					"    from jdbc_comment\n"+
 					"    group by fk_userid\n"+
 					"    ) c\n"+
-					"    on m.userid = c.userid";
+					"    on m.userid = c.userid\n"+
+					"    order by userseq asc";
 			
 			ps = conn.prepareStatement(sql);
 			
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				memberList = new ArrayList<MemberDTO>();
-				
 				MemberDTO member = new MemberDTO();
 				member.setUserseq(rs.getInt(1));
 				member.setUserid(rs.getString(2));

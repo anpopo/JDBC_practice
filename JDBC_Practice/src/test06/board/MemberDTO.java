@@ -74,5 +74,10 @@ public class MemberDTO {
 		this.commentcount = commentcount;
 	}
 	
+	public String getUserInfo() {
+		String userInfo = userseq + "\t" + userid + "\t" + name + "\t" + mobile + "\t" + point + "\t"
+				+ registerday + "\t" + status + "\t" + writecount + "회\t" + commentcount + "회";
+		return userInfo;
+	}
 	
 }

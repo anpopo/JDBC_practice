@@ -630,7 +630,19 @@ public class TotalController {
 	private void showMember() {
 		List<MemberDTO> memberList = bdao.showMember();
 		
-		if(memberList != null) {
+		if(memberList.size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			
+			for (MemberDTO member : memberList) {
+				sb.append(member.getUserInfo() + "\n");		
+			}
+			
+			System.out.println("\n--------------------------------[유저정보]---------------------------------");
+			System.out.println("유저번호\t유저아이디\t이름\t전화번호\t\t포인트\t등록일자\t상태(1:회원,0:비회원)\t작성게시글수\t작성댓글수\t");
+			System.out.println("---------------------------------------------------------------------------");
+			
+			System.out.println(sb.toString());
+			
 			
 		} else {
 			System.out.println("등록된 회원이 없삼...ㅠㅠ\n");
